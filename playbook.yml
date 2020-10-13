@@ -1,0 +1,16 @@
+---
+
+- hosts:  netid_rstudio
+  become: yes
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: debuntu_security_baseline
+    - import_role:
+        name: base
+    - import_role:
+        name: proxy 
+    - import_role:
+        name: netid
+    - import_role:
+        name: rstudio

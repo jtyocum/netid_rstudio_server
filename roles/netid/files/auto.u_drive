@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "${USER} -fstype=cifs,cruid=${1},uid=${1},gid=100513,file_mode=0700,dir_mode=0700,sec=krb5i ://udrive.uw.edu/udrive"

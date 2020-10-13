@@ -1,0 +1,22 @@
+[global]
+
+  workgroup = NETID
+  security = ADS
+  realm = NETID.WASHINGTON.EDU
+  netbios name = {{ netbios_name }}
+
+  kerberos method = secrets and keytab
+  winbind refresh tickets = yes
+  
+  idmap config *:backend = tdb
+  idmap config *:range = 20000-29999
+  idmap config NETID:backend = rid
+  idmap config NETID:range = 100000-9999999
+
+  winbind use default domain = yes
+  winbind nss info = template
+  template shell = /bin/bash
+  template homedir = /home/%D/%U
+
+  server min protocol = SMB2
+  client min protocol = SMB2

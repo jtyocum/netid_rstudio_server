@@ -1,0 +1,28 @@
+---
+
+- name: Install R, etc.
+  apt:
+    state: latest
+    name:
+      - r-base
+      - texlive
+
+- name: Install R Studio Server
+  apt:
+    deb: https://download2.rstudio.org/server/bionic/amd64/rstudio-server-{{ rstudio_version }}-amd64.deb
+
+- name: Copy mkhome
+  copy:
+    src: mkhome.sh
+    dest: /etc/pam.d/mkhome.sh
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Configure PAM
+  copy:
+    src: rstudio
+    dest: /etc/pam.d/rstudio
+    owner: root
+    group: root
+    mode: '0644'

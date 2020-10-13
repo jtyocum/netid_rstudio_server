@@ -1,0 +1,8 @@
+---
+
+- name: Install Base Packages
+  apt:
+    state: present
+    name:
+      - git
+      - vim

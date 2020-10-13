@@ -1,0 +1,25 @@
+---
+
+- name: Copy incommon intermediate cert
+  copy:
+    src: incommon_intermediate.crt
+    dest: /etc/ssl/certs/incommon_intermediate.crt
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Generate SSL private key
+  openssl_privatekey:
+    path: /etc/ssl/private/{{ rstudio_server_name }}_privkey.pem
+    backup: yes
+
+- name: Generate CSR
+  openssl_csr:
+    path: /etc/ssl/{{ rstudio_server_name }}.csr
+    privatekey_path: /etc/ssl/private/{{ rstudio_server_name }}_privkey.pem
+    common_name: "{{ rstudio_server_name }}"
+    organization_name: University of Washington
+    locality_name: Seattle
+    state_or_province_name: WA
+    country_name: US
+    

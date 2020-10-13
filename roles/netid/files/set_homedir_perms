@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for i in $(ls /home/NETID); do
+	chmod 0700 /home/NETID/${i}
+done

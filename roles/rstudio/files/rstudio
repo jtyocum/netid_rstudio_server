@@ -1,0 +1,9 @@
+# R Studio Server Community Edition home directory creation workaround...
+# https://serverfault.com/questions/611842/rhel-6-5-web-application-pam-auth-pam-oddjob-mkhomedir
+
+auth [success=ok new_authtok_reqd=ok ignore=ignore user_unknown=bad default=die] pam_exec.so /etc/pam.d/mkhome.sh
+
+@include common-auth
+@include common-account
+@include common-password
+@include common-session

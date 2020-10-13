@@ -1,0 +1,53 @@
+<VirtualHost *:80>
+    ServerName {{ rstudio_server_name }}
+    ServerAlias {{ rstudio_server_aliases }}
+    
+    DocumentRoot /var/www/html
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    
+    RewriteEngine On
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ rstudio_server_name }}
+    ServerAlias {{ rstudio_server_aliases }}
+    
+    DocumentRoot /var/www/html
+    
+    SSLEngine on
+    SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    SSLHonorCipherOrder off
+    SSLSessionTickets off
+    SSLCACertificateFile /etc/ssl/certs/incommon_intermediate.crt
+    SSLCertificateFile /etc/ssl/certs/{{ rstudio_server_name }}_cert.pem
+    SSLCertificateKeyFile /etc/ssl/private/{{ rstudio_server_name }}_privkey.pem
+    
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    <Proxy *>
+        Allow from localhost
+    </Proxy>
+
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} =websocket
+    RewriteRule /(.*) ws://localhost:8787/$1  [P,L]
+    RewriteCond %{HTTP:Upgrade} !=websocket
+    RewriteRule /(.*) http://localhost:8787/$1 [P,L]
+    ProxyPass / http://localhost:8787/
+    ProxyPassReverse / http://localhost:8787/
+    ProxyRequests Off
+
+    <Location />
+        AuthType shibboleth
+        ShibRequireSession On
+        require valid-user
+        ShibUseEnvironment On
+        Order allow,deny
+        Allow from all
+    </Location>
+</VirtualHost>

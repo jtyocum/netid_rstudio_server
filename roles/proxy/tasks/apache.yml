@@ -1,0 +1,112 @@
+---
+
+- name: Install Apache, etc.
+  apt:
+    name:
+      - apache2
+      - libapache2-mod-shib
+    
+- name: Allow HTTP (UFW)
+  ufw:
+    rule: allow
+    port: http
+
+- name: Allow HTTPS (UFW)
+  ufw:
+    rule: allow
+    port: https
+    
+- name: Restrict ServerTokens
+  notify: restart_apache
+  lineinfile:
+    path: /etc/apache2/conf-available/security.conf
+    regexp: '^ServerTokens'
+    line: ServerTokens Prod
+
+- name: Restrict ServerSignature
+  notify: restart_apache
+  lineinfile:
+    path: /etc/apache2/conf-available/security.conf
+    regexp: '^ServerSignature'
+    line: ServerSignature Off
+
+- name: Enable mod_rewrite
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: rewrite
+    
+- name: Enable mod_http2
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: http2
+
+- name: Enable mod_ssl
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: ssl
+
+- name: Enable mod_proxy
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: proxy
+
+- name: Enable mod_proxy_html
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: proxy_html
+
+- name: Enable mod_proxy_http
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: proxy_http
+    
+- name: Enable mod_proxy_wstunnel
+  notify: restart_apache
+  apache2_module:
+    state: present
+    name: proxy_wstunnel
+
+- name: Copy incommon MD cert
+  copy:
+    src: inc-md-cert.pem
+    dest: /etc/shibboleth/inc-md-cert.pem
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy attribute map
+  copy:
+    src: attribute-map.xml
+    dest: /etc/shibboleth/attribute-map.xml
+    owner: root
+    group: root
+    mode: '0644'
+    
+- name: Configure shibboleth
+  template:
+    src: shibboleth2.xml.j2
+    dest: /etc/shibboleth/shibboleth2.xml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Generate shibboleth keys
+  command: /usr/sbin/shib-keygen
+  args:
+    creates: /etc/shibboleth/sp-key.pem
+  
+- name: Configure virtual host
+  template:
+    src: vhost.j2
+    dest: /etc/apache2/sites-available/{{ rstudio_server_name }}.conf
+    owner: root
+    group: root
+    mode: '0644'
+  
+    

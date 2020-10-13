@@ -1,0 +1,11 @@
+netid_rstudio:
+  hosts:
+    demo.example.washington.edu:
+      logon_banner: |
+        NOTICE: This system is the property of the University of Washington (UW). As a UW system, usage is subject to several university policies, including: APS 2.2, 2.4, 2.5, and 2.6. Access to this system requires acceptance of the "Access and Use Agreement for UW Data and Information Systems", available at https://uwnetid.washington.edu/agree/.
+      ssh_allow_groups: root
+      ssh_root_host: 172.0.0.1
+      netbios_name: EXAMPLE
+      rstudio_version: 1.3.1093
+      rstudio_server_name: demo.example.washington.edu
+      rstudio_server_aliases: rstudio.example.washington.edu
